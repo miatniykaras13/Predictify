@@ -1,0 +1,80 @@
+﻿1. Название ресурса/компании
+Manifold Markets, Inc. (Manifold Markets).
+
+2. Адрес ресурса в сети
+https://manifold.markets/
+При открытии главной страницы URL меняется на https://manifold.markets/?fy=0.
+
+3. Архитектура, логика и технологический стек
+Начальный GET / вернул HTTP 200, Content-Type: text/html; charset=utf-8. Заголовки server: Vercel и x-powered-by: Next.js, а также файлы /_next/static/chunks/ и turbopack-... подтверждают использование Vercel, Next.js и Turbopack. Интерфейс построен на React.
+
+На главной странице доступны каталог рынков, поиск, категории, сортировка Best/Hot/New и фильтры. Данные подгружаются без полной перезагрузки страницы. Запросы к *.supabase.co/rest/v1/groups и .../tv_schedule вернули JSON с кодом 200. Отправка данных в .../user_events вернула 201. Изображения выдаются через /_next/image в формате WebP. Это подтверждает клиентское взаимодействие с Supabase и оптимизацию изображений Next.js. Внутренние операции, требующие входа в аккаунт, не проверялись.
+
+Примеры сетевых запросов и ответов:
+- GET https://manifold.markets/ -> 200, HTML, Vercel: начальный документ.
+- GET https://*.supabase.co/rest/v1/groups -> 200, JSON: данные категорий/групп.
+- POST https://*.supabase.co/rest/v1/user_events -> 201: событие пользовательской активности.
+- GET https://manifold.markets/_next/image -> 200, image/webp: оптимизированные изображения.
+
+4. Семантические элементы HTML5
+Подсчёт выполнен в итоговом DOM главной страницы через 7 секунд после DOMContentLoaded в новом профиле браузера при ширине 1365 px:
+- <nav> — 2: боковая навигация и нижняя мобильная навигация. Обе имеют aria-label.
+- <main> — 1: основное содержимое с id="main-content".
+- <footer> — 1: ссылки Terms и Privacy.
+- <header> — 0.
+- <section> — 0.
+- <article> — 0.
+- <aside> — 0.
+- <div> — 1068: основная структурная и визуальная сетка.
+
+5. Вёрстка div и классы
+В классах div преобладают описания внешнего вида и адаптивности, например: "flex flex-col", "bg-canvas-0 sticky top-0", "lg:grid lg:grid-cols-12". Класс "coin-offset" указывает на визуальное смещение. Выраженных семантических имён для карточек рынков в исследованном DOM не найдено. Смысл навигационных блоков передаётся тегом <nav> и атрибутами aria-label="Sidebar" и aria-label="Bottom navigation"; у поиска также есть доступное название.
+
+6. Адаптивность и media-запросы
+В загруженном CSS найдены @media (min-width: 640px), (min-width: 768px), (min-width: 1024px), (min-width: 1280px), (min-width: 1536px), а также локальные правила max-width: 400px и 357px. Классы lg:hidden и lg:flex переключают варианты навигации.
+
+- При размере 390 x 844 px боковая навигация скрыта, нижняя видима.
+- При размере 1280 x 800 px боковая навигация видима, нижняя скрыта.
+
+7. Lighthouse: условия и результаты
+Замеры выполнены 27.09.2026 в Windows, Chrome 154, Lighthouse 13.5.0, новый профиль браузера. Физическое подключение компьютера — Wi-Fi (802.11). Место проверки - дом.
+
+Мобильный профиль: эмуляция Moto G Power (2022), экран 412 x 823 px, RTT 150 мс, пропускная способность 1,64 Мбит/с, замедление CPU 4x, метод simulate.
+Десктопный профиль: экран 1350 x 940 px, RTT 40 мс, пропускная способность 10,24 Мбит/с, CPU 1x, метод simulate.
+
+Показатель                 Mobile          Desktop
+Performance                31/100          39/100
+Accessibility              91/100          92/100
+Best Practices             73/100          73/100
+SEO                        100/100         100/100
+First Contentful Paint     3,2 с           1,4 с
+Largest Contentful Paint   35,8 с          4,8 с
+Total Blocking Time        6270 мс         670 мс
+Cumulative Layout Shift    0,024           0,013
+Speed Index                9,1 с           4,1 с
+
+Главная проблема — скорость загрузки и отзывчивость, особенно в мобильном профиле. Lighthouse отметил приблизительно 3691 КиБ потенциально неиспользуемого JavaScript, 10,4 с исполнения JavaScript и 14,6 с работы основного потока в мобильном запуске. Также выявлены недостаточная контрастность части текста, нарушения структуры отдельных ARIA-ролей, сторонние cookies и ошибки в консоли.
+
+8. Локальное хранилище и cookies
+В новом анонимном профиле после открытия страницы обнаружены 46 ключей localStorage, 1 ключ sessionStorage и 4 cookies домена manifold.markets.
+
+Примеры localStorage:
+- browse-v1-anonymous-local-state — состояние анонимного каталога (вывод по имени ключа).
+- home-page-trending-topics и tv-schedule — вероятный кэш данных.
+- contract-metrics-* — сохранённые данные метрик рынков.
+- is-mobile — вероятный параметр интерфейса.
+- device-token — идентификатор устройства; точное содержимое не изучалось.
+- _gcl_ls — данные рекламной атрибуции Google.
+
+sessionStorage: _rdt_cfg — конфигурация Reddit Pixel (вывод по имени ключа и сетевым запросам).
+Cookies домена manifold.markets: _twsid, _twpid, _rdt_uuid, _gcl_au. По именам и сетевым запросам они связаны с X/Twitter, Reddit и Google Ads. Дополнительно браузер получил 7 cookies сторонних доменов Twitter/t.co. Cookies авторизованного пользователя не исследовались.
+
+9. Маркетинговые инструменты и аналитика
+В журнале сетевых запросов проверены фильтры analytics, metrika, facebook, pixel, tagmanager, hotjar. Дополнительно проверены Google Ads, Reddit и X/Twitter.
+
+- Umami: analytics.umami.is/script.js, gateway.umami.is/api/send (POST 200). Используется для аналитики посещений и событий.
+- Google Tag Manager / Google Ads: gtm.js?id=GTM-MLMPXHJ6, gtag/destination?id=AW-11283624107, запросы collect. Используются для управления тегами и рекламной атрибуции.
+- Reddit Pixel: redditstatic.com/ads/pixel.js, alb.reddit.com/rp?event=PageVisit. Используется для учёта визитов и рекламных событий.
+- X/Twitter: static.ads-twitter.com/uwt.js, analytics.twitter.com/1/i/adsct. Используется для рекламных событий и атрибуции.
+- metrika, facebook, hotjar: совпадений в данном анонимном сеансе не обнаружено. Это не доказывает отсутствия при других сценариях.
+
