@@ -1,0 +1,87 @@
+﻿1. Название ресурса/компании
+PredictIt
+
+2. Адрес ресурса в сети
+https://www.predictit.org/
+Дополнительные разделы: https://www.predictit.org/markets (рынки), https://www.predictit.org/news (новости), https://www.predictit.org/learn (обучение).
+
+3. Архитектура, логика и технологический стек
+Начальный GET / вернул HTTP 200, Content-Type: text/html. Заголовки server: cloudflare и x-powered-by: ASP.NET показывают, что перед сервером приложения находится Cloudflare, а серверная часть использует ASP.NET. Для HTML указано cache-control: no-cache, no-store, must-revalidate. Файлы клиентского приложения (manifest, vendor, global, app) и CSS загружаются с cdn1.predictit.org.
+
+В DOM найден корневой блок id="app" и атрибуты data-vue-meta: это признаки интерфейса на Vue. Дополнительно загружаются jQuery 3.7.1, Highcharts/Highstock для графиков, Firebase SDK и библиотека SignalR. Запросы к predictit-f497e.firebaseio.com/.lp указывают на обмен данными через Firebase long polling; наличие библиотеки SignalR само по себе не доказывает, что каждое обновление идёт через неё.
+
+На главной странице есть каталог рынков, поиск, категории Elections/President/Congress и другие, новости и ссылки на правила. После открытия HTML браузер отдельно получает данные каталога через JSON API.
+
+Примеры сетевых запросов и ответов:
+- GET https://www.predictit.org/ -> 200, HTML: начальный документ.
+- GET https://www.predictit.org/api/Browse/Headers -> 200, JSON: заголовки каталога.
+- GET https://www.predictit.org/api/Browse/Filters/0 -> 200, JSON: доступные фильтры.
+- GET https://www.predictit.org/api/Browse/FilteredMarkets/0?... -> 200, JSON: список рынков с параметрами page, sort и dateFrom/dateTo.
+- GET https://cdn1.predictit.org/static/.../js/app....js -> 200, JavaScript: код клиентского приложения.
+
+4. Семантические элементы HTML5
+Подсчёт выполнен в итоговом DOM главной страницы через 12 секунд после DOMContentLoaded в новом профиле браузера при ширине 1365 px:
+- <header> — 1: шапка с логотипом, поиском и ссылками входа.
+- <nav> — 1: основное меню Markets, News и Learn.
+- <footer> — 1: ссылки поддержки, юридическая информация и социальные сети.
+- <main> — 0.
+- <section> — 0.
+- <article> — 0.
+- <aside> — 0.
+- <div> — 396: контейнеры каталога, карточек и сетки страницы.
+
+Часть смысловых областей оформлена div-контейнерами. Отсутствие <main> отмечено и в проверке доступности Lighthouse. Число элементов является снимком конкретной загрузки и может измениться.
+
+5. Вёрстка div и классы
+В отличие от набора только утилитарных классов, PredictIt использует осмысленные имена по схеме «блок__элемент--состояние». Примеры: "app-layout__header" (шапка макета), "app-header__nav" (навигация шапки), "main-nav__item" (пункт меню), "nav-browse__slide--categories" (лента категорий), "page-markets__desktop-header" (заголовок каталога на широком экране). Эти классы помогают понять роль блока по разметке, хотя не заменяют семантические HTML-теги.
+
+6. Адаптивность и media-запросы
+В двух загруженных CSS-файлах найдены @media (min-width: 40em) — около 640px, (min-width: 56.875em) — 910px, (min-width: 768px), (min-width: 1024px), а также max-width: 320px, 375px, 560px, 767px, 910px и 1060px. Есть условие (hover: hover) and (pointer: fine) для устройств с мышью.
+
+- При размере 390 x 844 px ссылки верхнего меню Markets/News/Learn скрыты; поиск и категории остаются доступны в компактной шапке.
+- При размере 1280 x 800 px верхнее меню Markets/News/Learn видно.
+
+Таким образом, навигация перестраивается для телефона. Полный тест торгового интерфейса на физических устройствах не проводился.
+
+7. Lighthouse: условия и результаты
+Замеры выполнены дома через Wi-Fi в Windows, Chrome 154, Lighthouse 13.5.0. Проверена главная страница https://www.predictit.org/ в новом профиле браузера. Lighthouse применял программную симуляцию сети и процессора, поэтому показатели не являются прямым измерением скорости домашнего Wi-Fi.
+
+Мобильный профиль: эмуляция Moto G Power (2022), экран 412 x 823 px, RTT 150 мс, пропускная способность 1,64 Мбит/с, замедление CPU 4x, метод simulate.
+Десктопный профиль: экран 1350 x 940 px, RTT 40 мс, пропускная способность 10,24 Мбит/с, CPU 1x, метод simulate.
+
+Показатель                 Mobile          Desktop
+Performance                18/100          45/100
+Accessibility              74/100          75/100
+Best Practices             73/100          73/100
+SEO                        92/100          92/100
+First Contentful Paint     9,3 с           3,5 с
+Largest Contentful Paint   19,9 с          5,9 с
+Total Blocking Time        3630 мс         270 мс
+Cumulative Layout Shift    0,179           0,074
+Speed Index                10,5 с          5,2 с
+
+Основная проблема в этом запуске — медленная первая отрисовка и появление главного содержимого на мобильном профиле. Lighthouse указал приблизительно 811 КиБ потенциально неиспользуемого JavaScript, 131 КиБ неиспользуемого CSS и 197 КиБ возможной экономии за счёт изображений. В доступности отмечены отсутствие основного ориентира <main>, ссылки без понятного названия, изображения без alt и нарушение порядка заголовков. Это одиночные лабораторные замеры динамического сайта; результаты могут измениться при повторении.
+
+8. Локальное хранилище и cookies
+В новом анонимном профиле после открытия страницы обнаружены 6 ключей localStorage, 1 ключ sessionStorage и 31 cookie: 12 для доменов predictit.org и 19 для сторонних доменов. Значения ключей и cookies в отчёт не включены.
+
+Примеры localStorage:
+- lastExternalReferrer и lastExternalReferrerTime — сведения об источнике перехода (вывод по именам ключей).
+- _gcl_ls — данные рекламной атрибуции Google.
+- firebase:previous_websocket_failure — признак состояния соединения Firebase.
+- browseHeaders — вероятный кэш заголовков каталога.
+- mmp_install_date — назначение по одному имени надёжно не определяется.
+
+В sessionStorage найден ключ oaiq_cs:*; его назначение не определялось.
+Примеры cookies домена PredictIt: ARRAffinity, ARRAffinitySameSite и __cflb (маршрутизация и балансировка), _ga/_gid/_gat_UA-79271-22 (Google Analytics), _gcl_au (рекламная атрибуция Google), _fbp (Meta Pixel), _twsid/_twpid (X/Twitter). Сторонние cookies пришли в том числе от YouTube, X/Twitter и рекламных доменов. Cookies авторизованного пользователя не проверялись.
+
+9. Маркетинговые инструменты и аналитика
+В журнале сетевых запросов проверены фильтры analytics, metrika, facebook, pixel, tagmanager и hotjar. В этом анонимном сеансе найдено соответственно 4, 0, 2, 5, 4 и 0 совпадений по URL. Отсутствие совпадений не доказывает, что инструмент не появляется после входа или в другом разделе.
+
+- Google Analytics и Google Tag Manager: gtm.js?id=GTM-WGVC48, gtag/js?id=G-XJF9JJ611P, google-analytics.com/analytics.js и запросы collect. Используются для статистики посещений.
+- Google Ads: gtag/destination?id=AW-978432586 и запросы конверсии. Используются для рекламной атрибуции.
+- Meta Pixel: connect.facebook.net/en_US/fbevents.js и cookie _fbp. Используется для рекламных событий.
+- X/Twitter: static.ads-twitter.com/uwt.js, analytics.twitter.com/1/i/adsct и cookies _twsid/_twpid. Используются для рекламных событий.
+- Дополнительно загружены sdk-cdn.optimove.net/websdk/sdk-v1.0.7.js, js.ipredictive.com/viant_universal_pixel.js и cdn.mgln.ai/pixel.min.js. Это дополнительные маркетинговые и рекламные интеграции; конкретные передаваемые поля не анализировались.
+- metrika и hotjar: совпадений в данном сеансе не обнаружено.
+
