@@ -1,0 +1,79 @@
+﻿1. Название ресурса/компании
+Kalshi Inc. (Kalshi).
+
+2. Адрес ресурса в сети
+https://kalshi.com/
+Дополнительные адреса: https://help.kalshi.com/ (справка), https://docs.kalshi.com/ (документация API), https://api.elections.kalshi.com/ (данные о событиях).
+
+3. Архитектура, логика и технологический стек
+Начальный GET / вернул HTTP 200, Content-Type: text/html; charset=utf-8. Заголовки server: Vercel, x-powered-by: Next.js и x-nextjs-prerender: 1, а также файлы /_next/static/immutable/chunks/ и turbopack-... подтверждают использование Vercel, Next.js и Turbopack. Интерфейс построен на React. Ответ главной страницы имеет cache-control: public, max-age=0, must-revalidate и x-vercel-cache: HIT: в проверенном сеансе документ был выдан из кэша Vercel.
+
+На странице показаны события и рынки по категориям, поиск, блок Live, варианты исходов, вероятности и объём торгов. Переходы между категориями и рынками выполняются через клиентский интерфейс. В документации Kalshi описаны REST API и WebSocket для рыночных данных.
+
+Примеры сетевых запросов и ответов:
+- GET https://kalshi.com/ -> 200, HTML: начальный документ.
+- GET https://kalshi.com/_next/static/immutable/chunks/...js -> 200, application/javascript: части клиентского приложения.
+- GET https://kalshi.com/_next/static/immutable/media/...woff2 -> 200, font/woff2: фирменный шрифт KalshiSans.
+
+4. Семантические элементы HTML5
+Подсчёт выполнен в итоговом DOM главной страницы при ширине 1365 px после загрузки страницы:
+- <nav> — 2: основная и мобильная навигация.
+- <section> — 4: смысловые блоки главной страницы.
+- <article> — 18: карточки и блоки отдельных событий.
+- <footer> — 1: ссылки компании и юридическая информация.
+- <header> — 0.
+- <main> — 0.
+- <aside> — 0.
+- <div> — 548: контейнеры сетки и отдельных элементов интерфейса.
+
+
+5. Вёрстка div и классы
+В div используются утилитарные классы, например "flex flex-col w-full", "bg-surface-x10 text-text-x10", "md:hidden" и "xxl:hidden". Встречаются и осмысленные классы компонентов: "trader-drawer-layout" (раскладка торговой панели), "trader-drawer-navbar-spacer" (место под навигацию), "market-slide-container", "market-slide-content-wrapper" и "market-slide-chart-wrapper" (части слайда рынка). 
+
+6. Адаптивность и media-запросы
+В загруженном CSS найдены правила max-width: 359px, 376px, 390px, 425px, 470px, 599px, 768px, 900px, 1024px, 1239px, 1444px и 1640px; min-width: 450px, 600px, 800px, 1024px и 1335px. Есть условия (hover: hover), (pointer: fine), (pointer: coarse) и prefers-reduced-motion. Они позволяют учитывать ширину экрана, тип ввода и предпочтение уменьшенной анимации.
+
+- При размере 390 x 844 px видна нижняя панель Primary mobile navigation с пунктами Predict, Live, Search и Social.
+- При размере 1280 x 800 px эта нижняя панель скрыта; доступна полная верхняя навигация.
+
+7. Lighthouse: условия и результаты
+Ниже приведён замер с помощью Lighthouse. Место проверки — дом, способ подключения — Wi-Fi, время — 00:19, инструмент — Lighthouse в DevTools, страница — https://kalshi.com/.
+
+Показатель                 Mobile          Desktop
+Performance                46/100          63/100
+Accessibility              81/100          83/100
+Best Practices             92/100          92/100
+SEO                        100/100         100/100
+
+Наибольший резерв улучшения в этом замере — производительность, особенно на телефоне. Оценки Lighthouse меняются в зависимости от сети, устройства, содержимого страницы и времени проверки. Сравнивать их с другим сайтом следует только при одинаковых условиях.
+
+8. Локальное хранилище и cookies
+Было найдено около 36 ключей Local Storage и около 29 cookies. Их набор зависит от профиля браузера, согласий, рекламы и момента загрузки. Назначение части ключей определено по именам и поэтому является предположением.
+
+Примеры Local Storage:
+- kalshi-activeTab, last-calendar-page-seen-ts, loglevel — состояние интерфейса и настройки логирования.
+- loggedOutUserId, kalshi_attribution_history, lastExternalReferrer — гостевой идентификатор и сведения об источнике перехода.
+- AMP_remote_config_*, AMP_unsent_* — настройки и события Amplitude.
+- statsig.* — параметры экспериментов и включения функций.
+- sprig.anon.env.v1.map, userleap.ids — данные инструмента опросов Sprig.
+- awswaf_session_storage, awswaf_token_refresh_timestamp — данные защиты AWS WAF.
+- riskified-session-id, rskRunCookie — данные системы противодействия мошенничеству.
+
+Примеры cookies:
+- _ga, _ga_R10TCKS4W, _gcl_au — Google Analytics и Google Ads.
+- _fbp — Meta Pixel; _rdt_uuid — Reddit Pixel; _tt_enable_cookie и ttp — TikTok Pixel.
+- AMP_* — Amplitude; _dd_s_v2 — Datadog; afUserId — AppsFlyer.
+- aws-waf-token — AWS WAF; lastRskRun — Riskified.
+
+В новом изолированном сеансе текущей проверки до полной инициализации сторонних сервисов появились только 3 ключа localStorage (loglevel, awswaf_token_refresh_timestamp, awswaf_session_storage) и cookie aws-waf-token. 
+9. Маркетинговые инструменты и аналитика
+По загруженным скриптам текущей главной страницы проверены названия analytics, metrika, facebook, pixel, tagmanager и hotjar. Наличие скрипта показывает подключение инструмента; отправка каждого события отдельно не проверялась.
+
+- Google Analytics / Google Ads / Tag Manager: загружены gtag/js?id=G-R10JTCKS4W, gtag/js?id=AW-16737159896 и gtm.js?id=GTM-NP66QTXD. Используются для аналитики и рекламной атрибуции.
+- Meta Pixel: connect.facebook.net/en_US/fbevents.js. Используется для рекламных событий.
+- Reddit Pixel: redditstatic.com/ads/pixel.js. Используется для учёта визитов и рекламы.
+- TikTok Pixel: analytics.tiktok.com/i18n/pixel/events.js. Используется для рекламной аналитики.
+- Amplitude: загружен analytics-browser-gtm-wrapper; используется для продуктовой аналитики.
+- Также обнаружены скрипты LinkedIn Insight и нескольких рекламных сетей. По ключам хранилища дополнительно отмечены Statsig, Sprig, AppsFlyer, mParticle и AppLovin.
+- metrika и hotjar: совпадений среди проверенных подключённых скриптов не обнаружено. Их отсутствие при других сценариях не доказано.
+
