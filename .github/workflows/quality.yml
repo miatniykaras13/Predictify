@@ -23,6 +23,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
+      - run: npm run test -w frontend
+      - run: npm run build -w frontend
 
   conventional-commits:
     name: Conventional Commits
