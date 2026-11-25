@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import "dotenv/config";
 
 const number = (name: string, fallback: number): number => {
   const raw = process.env[name];
@@ -9,14 +9,14 @@ const number = (name: string, fallback: number): number => {
 };
 
 export const env = {
-  nodeEnv: process.env.NODE_ENV ?? 'development',
-  host: process.env.HOST ?? '0.0.0.0',
-  port: number('PORT', 3000),
-  databaseUrl: process.env.DATABASE_URL ?? '',
-  dbPoolMax: number('DB_POOL_MAX', 10),
-  dbIdleTimeoutMs: number('DB_IDLE_TIMEOUT_MS', 30000)
+  nodeEnv: process.env.NODE_ENV ?? "development",
+  host: process.env.HOST ?? "0.0.0.0",
+  port: number("PORT", 3000),
+  databaseUrl: process.env.DATABASE_URL ?? "",
+  dbPoolMax: number("DB_POOL_MAX", 10),
+  dbIdleTimeoutMs: number("DB_IDLE_TIMEOUT_MS", 30000),
 } as const;
 
 if (!env.databaseUrl) {
-  throw new Error('DATABASE_URL is required');
+  throw new Error("DATABASE_URL is required");
 }
