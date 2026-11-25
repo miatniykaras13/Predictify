@@ -1,0 +1,271 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, sans-serif;
+  color: #17233b;
+  background: #f5f7fb;
+  --surface: #fff;
+  --muted: #4a5972;
+  --border: #d9e1ec;
+  --accent: #2450a7;
+  --accent-hover: #193d87;
+  --accent-surface: #e8efff;
+  --error: #9b252b;
+  --error-surface: #fff5f5;
+  --radius: 0.75rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  line-height: 1.5;
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+.container {
+  width: min(100% - 2rem, 67.5rem);
+  margin-inline: auto;
+}
+
+.skip-link {
+  position: fixed;
+  inset: 0.5rem auto auto 0.5rem;
+  z-index: 1;
+  padding: 0.65rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  transform: translateY(calc(-100% - 1rem));
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header__inner,
+.main-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.app-header__inner {
+  gap: 0.5rem 2rem;
+  padding-block: 0.75rem;
+}
+
+.brand {
+  color: inherit;
+  font-size: 1.25rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.main-nav {
+  gap: 0.25rem;
+}
+
+.main-nav a {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.main-nav a:hover,
+.main-nav a[aria-current='page'] {
+  color: var(--accent);
+  background: var(--accent-surface);
+}
+
+.app-main {
+  display: grid;
+  gap: 1.25rem;
+  padding-block: clamp(1.5rem, 5vw, 3.5rem);
+}
+
+.app-main > a {
+  justify-self: start;
+}
+
+.state {
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+}
+
+.state--error {
+  border-color: #efc9cb;
+  background: var(--error-surface);
+}
+
+.state__title {
+  color: #17233b;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.state--error .state__title,
+.field__error {
+  color: var(--error);
+}
+
+.state__title + p {
+  margin-top: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.state .button {
+  margin-top: 0.75rem;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-bottom: 0.25rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+.button,
+.field input,
+.field textarea {
+  font: inherit;
+  border: 1px solid #a5b2c5;
+  border-radius: 0.5rem;
+}
+
+.button {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.button--primary {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.button--primary:hover:enabled {
+  background: var(--accent-hover);
+}
+
+.button--secondary {
+  color: var(--accent);
+  background: var(--surface);
+}
+
+.button--secondary:hover:enabled {
+  background: var(--accent-surface);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.field {
+  display: grid;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.field label {
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  color: inherit;
+  background: var(--surface);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field [aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.field__error {
+  font-size: 0.875rem;
+}
+
+.modal {
+  width: min(100% - 2rem, 28rem);
+  max-height: calc(100% - 2rem);
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.modal::backdrop {
+  background: rgb(23 35 59 / 55%);
+}
+
+.modal__body,
+.modal__actions {
+  margin-top: 1rem;
+}
+
+.modal__actions {
+  text-align: end;
+}

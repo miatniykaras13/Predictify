@@ -2,3 +2,6 @@ node_modules/
 dist/
 build/
 coverage/
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
