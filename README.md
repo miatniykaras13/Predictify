@@ -111,3 +111,29 @@ stateDiagram-v2
 | База данных | PostgreSQL | Аккаунты, категории, назначения, события, прогнозы, коэффициенты, начисления и журнал действий. |
 | Объектное хранилище | MinIO | Хранение изображений событий и аватарок пользователей; в PostgreSQL сохраняются ключи объектов. |
 | Развёртывание | Docker Compose | Совместный запуск приложения и инфраструктурных сервисов в контейнерах. 
+
+
+## Проверки качества
+
+Для локального запуска установите Node.js 24 и выполните команды из корня репозитория.
+
+```sh
+npm ci
+npm run lint
+npm run format:check
+```
+
+ESLint проверяет код в `frontend/` и `backend/`. Prettier проверяет форматирование файлов приложений и конфигурации инструментов. Чтобы применить форматирование, выполните `npm run format`.
+
+Пишите сообщения коммитов по [Conventional Commits](https://www.conventionalcommits.org/), например `feat(frontend): add event filters` или `fix(backend): validate event deadline`.
+
+Перед открытием PR в `develop` проверьте сообщения коммитов локально.
+
+```sh
+git fetch origin
+npm run commitlint -- --from origin/develop --to HEAD
+```
+
+Для PR в `main` используйте `origin/main` вместо `origin/develop`. GitHub Actions запускает линтинг, проверку форматирования и проверку сообщений коммитов для обеих целевых веток.
+
+Ветки `features/*` вливаются в `develop`, а `develop` в `main` через **Create a merge commit**. Commitlint проверяет обычные коммиты, которые PR добавляет в целевую ветку. Git исключает служебные merge-коммиты по числу родителей.
