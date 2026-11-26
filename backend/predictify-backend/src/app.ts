@@ -1,15 +1,33 @@
 import Fastify from 'fastify';
 import sensible from '@fastify/sensible';
+import cookie from '@fastify/cookie';
+import jwt from '@fastify/jwt';
+import { readAuthConfig } from './auth/config.js';
+import { authRoutes } from './routes/auth.js';
 import { healthRoutes } from './routes/health.js';
 
 export function buildApp() {
+  const auth = readAuthConfig();
   const app = Fastify({
-    logger: true,
+    logger: {
+      redact: [
+        'req.headers.authorization',
+        'req.headers.cookie',
+        'res.headers["set-cookie"]',
+      ],
+    },
     ajv: { customOptions: { removeAdditional: false } },
   });
 
   app.register(sensible);
+  app.register(cookie);
+  app.register(jwt, {
+    secret: auth.accessTokenKey,
+    sign: { algorithm: 'HS256' },
+    verify: { algorithms: ['HS256'] },
+  });
   app.register(healthRoutes, { prefix: '/api' });
+  app.register(authRoutes, { ...auth, prefix: '/api/auth' });
 
   app.setErrorHandler((error, request, reply) => {
     request.log.error({ error }, 'unhandled request error');

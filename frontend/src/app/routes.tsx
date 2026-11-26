@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Link, Navigate, Route, Routes } from 'react-router';
+import { AuthPage } from '../features/auth/AuthPage';
 import { EventsPage } from '../features/events/EventsPage';
 import { LeaderboardPage } from '../features/leaderboard/LeaderboardPage';
 import { LoadingState } from '../shared/ui';
@@ -16,6 +17,11 @@ export function AppRoutes() {
         <Route index element={<Navigate to="/events" replace />} />
         <Route path="events" element={<EventsPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
+        <Route path="login" element={<AuthPage key="login" mode="login" />} />
+        <Route
+          path="register"
+          element={<AuthPage key="register" mode="register" />}
+        />
         {UiDemo && (
           <Route
             path="dev/ui"

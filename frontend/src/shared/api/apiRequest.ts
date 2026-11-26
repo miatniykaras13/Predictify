@@ -1,4 +1,4 @@
-type ApiRequestOptions = Omit<RequestInit, 'body'> &
+export type ApiRequestOptions = Omit<RequestInit, 'body'> &
   ({ json?: never; body?: BodyInit | null } | { json: unknown; body?: never });
 
 type ApiErrorKind = 'http' | 'network' | 'invalid-json';
