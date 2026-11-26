@@ -84,17 +84,26 @@ K = N / n, но не больше 10
 
 ```mermaid
 stateDiagram-v2
+    state "Черновик" as Draft
     state "Открыто" as Open
+    state "Ожидает результата" as AwaitingResult
     state "Рассчитывается" as Calculating
     state "Завершено" as Completed
     state "Отменено" as Cancelled
 
-    [*] --> Open: Публикация
-    Open --> Calculating: Срок или досрочное закрытие
-    Calculating --> Completed: Все начисления выполнены
+    [*] --> Draft: Создание черновика
+    Draft --> [*]: Удаление черновика
+    Draft --> Open: Публикация
+    Open --> AwaitingResult: Срок или досрочное закрытие
     Open --> Cancelled: Отмена с причиной
+    AwaitingResult --> Calculating: Подтверждение исхода
+    AwaitingResult --> Cancelled: Отмена с причиной
+    Calculating --> Completed: Все начисления выполнены
     Completed --> Calculating: Исправление исхода администратором
+    Completed --> Cancelled: Отмена администратором
 ```
+
+Модель данных, правила публикации и контракты API описаны в [документе о категориях и жизненном цикле события](docs/categories-and-event-lifecycle.md).
 
 В момент сохранения прогноза серверное время должно быть строго меньше срока закрытия. Перенос ожидаемой даты результата не возобновляет приём прогнозов и не меняет зафиксированные коэффициенты. При задержке результата событие остаётся в ожидании; автоматический выбор исхода не выполняется.
 
