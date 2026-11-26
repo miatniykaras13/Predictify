@@ -1,5 +1,5 @@
-import pg from "pg";
-import { env } from "../config/env.js";
+import pg from 'pg';
+import { env } from '../config/env.js';
 
 const { Pool } = pg;
 
@@ -10,5 +10,5 @@ export const pool = new Pool({
 });
 
 export async function checkDatabase(): Promise<void> {
-  await pool.query("SELECT 1");
+  await pool.query('SELECT 1');
 }
