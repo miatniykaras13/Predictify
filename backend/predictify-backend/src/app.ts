@@ -13,14 +13,25 @@ export function buildApp() {
 
   app.setErrorHandler((error, request, reply) => {
     request.log.error({ error }, 'unhandled request error');
-    const statusCode =
-      error.statusCode && error.statusCode >= 400 ? error.statusCode : 500;
-    return reply.code(statusCode).send({
-      error:
-        statusCode === 500
-          ? 'INTERNAL_SERVER_ERROR'
-          : (error.code ?? 'REQUEST_ERROR'),
-      message: statusCode === 500 ? 'Internal server error' : error.message,
+    if (
+      typeof error !== 'object' ||
+      error === null ||
+      !('statusCode' in error) ||
+      typeof error.statusCode !== 'number' ||
+      !Number.isInteger(error.statusCode) ||
+      error.statusCode < 400 ||
+      error.statusCode === 500 ||
+      error.statusCode > 599
+    ) {
+      return reply.code(500).send({
+        error: 'INTERNAL_SERVER_ERROR',
+        message: 'Internal server error',
+      });
+    }
+
+    return reply.code(error.statusCode).send({
+      error: ('code' in error ? error.code : undefined) ?? 'REQUEST_ERROR',
+      message: 'message' in error ? error.message : undefined,
     });
   });
 
