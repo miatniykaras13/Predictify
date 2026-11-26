@@ -1,0 +1,32 @@
+services:
+  frontend:
+    build:
+      target: development
+    command:
+      [
+        'npm',
+        'run',
+        'dev',
+        '-w',
+        'frontend',
+        '--',
+        '--host',
+        '0.0.0.0',
+        '--port',
+        '5173',
+        '--strictPort',
+      ]
+    volumes:
+      - ./frontend/src:/app/frontend/src:ro
+      - ./frontend/index.html:/app/frontend/index.html:ro
+
+  backend:
+    build:
+      target: development
+    command: ['npm', 'run', 'dev']
+    volumes:
+      - ./backend/predictify-backend/src:/app/src:ro
+
+  migrate:
+    volumes:
+      - ./backend/predictify-backend/migrations:/app/migrations:ro

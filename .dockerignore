@@ -1,0 +1,9 @@
+*
+!package.json
+!package-lock.json
+!frontend/
+!frontend/**
+**/.env*
+**/node_modules
+**/dist
+**/coverage

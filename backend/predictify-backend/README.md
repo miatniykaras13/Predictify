@@ -5,16 +5,28 @@
 
 ## Требования
 
-- Node.js 22+
+- Node.js 24
 - Docker / Docker Compose
 - npm
 
-## Локальный запуск
+## Локальный запуск backend
+
+Чтобы запустить backend на хосте, настройте корневой `.env` по инструкции совместного запуска, затем поднимите PostgreSQL из корня репозитория. [Инструкция в корневом README](../../README.md#запуск-через-docker-compose)
+
+```bash
+docker compose up -d --wait postgres
+```
+
+Затем из каталога backend создайте локальный `.env`, установите зависимости и укажите в `DATABASE_URL` пароль `POSTGRES_PASSWORD` и порт `POSTGRES_PORT` из корневого `.env`.
 
 ```bash
 cp .env.example .env
-npm install
-docker compose up -d postgres
+npm ci
+```
+
+После настройки подключения примените миграции и запустите API.
+
+```bash
 npm run migrate:up
 npm run dev
 ```
@@ -93,14 +105,10 @@ PR направляется в `develop` и содержит:
 
 ## Проверка создания БД с нуля
 
-Для проверки на чистом окружении:
+Из корня репозитория запустите отдельный Compose-проект со свободными локальными портами и пустыми томами.
 
 ```bash
-docker compose down -v
-docker compose up -d postgres
-npm run migrate:up
-npm run build
-npm test
+docker compose -p predictify-check up -d --build --wait
 ```
 
-После этого `/api/ready` должен вернуть `200` и `{"status":"ready","database":"up"}`.
+Через адрес frontend запрос `/api/ready` должен вернуть `200` и `{"status":"ready","database":"up"}`. После проверки удалите контейнеры и тома тестового проекта командой `docker compose -p predictify-check down -v`.
