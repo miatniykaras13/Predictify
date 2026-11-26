@@ -116,6 +116,27 @@ h2 {
   padding-block: clamp(1.5rem, 5vw, 3.5rem);
 }
 
+.auth-panel {
+  display: grid;
+  gap: 1.25rem;
+  width: min(100%, 28rem);
+  justify-self: center;
+  padding: clamp(1rem, 4vw, 2rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-form #password-length {
+  margin-top: -0.5rem;
+  color: var(--muted);
+}
+
 .app-main > a {
   justify-self: start;
 }

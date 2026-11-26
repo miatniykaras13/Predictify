@@ -27,6 +27,8 @@ services:
     init: true
     environment:
       DATABASE_URL: *database-url
+      AUTH_APP_ORIGIN: '${AUTH_APP_ORIGIN:-http://127.0.0.1:${FRONTEND_PORT:-5173}}'
+      AUTH_ACCESS_TOKEN_SECRET: '${AUTH_ACCESS_TOKEN_SECRET:?Set AUTH_ACCESS_TOKEN_SECRET in .env}'
     depends_on:
       postgres:
         condition: service_healthy

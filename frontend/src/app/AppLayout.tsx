@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router';
+import { AuthNavigation } from '../features/auth/AuthNavigation';
 
 export function AppLayout() {
   return (
@@ -14,6 +15,7 @@ export function AppLayout() {
           <nav className="main-nav" aria-label="Основная навигация">
             <NavLink to="/events">События</NavLink>
             <NavLink to="/leaderboard">Рейтинг</NavLink>
+            <AuthNavigation />
           </nav>
         </div>
       </header>

@@ -5,7 +5,7 @@
 
 ## Требования
 
-- Node.js 24
+- Node.js 24.7 или новее в ветке 24.x
 - Docker / Docker Compose
 - npm
 
@@ -17,7 +17,7 @@
 docker compose up -d --wait postgres
 ```
 
-Затем из каталога backend создайте локальный `.env`, установите зависимости и укажите в `DATABASE_URL` пароль `POSTGRES_PASSWORD` и порт `POSTGRES_PORT` из корневого `.env`.
+Затем из каталога backend создайте локальный `.env`, установите зависимости и укажите в `DATABASE_URL` пароль `POSTGRES_PASSWORD` и порт `POSTGRES_PORT` из корневого `.env`. Задайте `AUTH_ACCESS_TOKEN_SECRET` и, если нужно, `AUTH_APP_ORIGIN` по инструкции запуска Compose.
 
 ```bash
 cp .env.example .env
@@ -39,6 +39,10 @@ curl http://localhost:3000/api/ready
 ```
 
 `/health` проверяет, что процесс API запущен. `/ready` дополнительно проверяет соединение с PostgreSQL и возвращает HTTP 503 при недоступной БД.
+
+## Тесты аккаунтов и сессий
+
+`npm test` запускает тесты без подключения к PostgreSQL. Для `npm run test:integration` примените миграции к отдельной тестовой базе и передайте её строку подключения через `TEST_DATABASE_URL`. Интеграционные тесты создают и удаляют тестовые аккаунты.
 
 ## Миграции
 
