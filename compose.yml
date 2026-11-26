@@ -1,0 +1,98 @@
+x-database-url: &database-url 'postgresql://predictify:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/predictify'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: preview
+    init: true
+    environment:
+      API_PROXY_TARGET: http://backend:3000
+    ports:
+      - '127.0.0.1:${FRONTEND_PORT:-5173}:5173'
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', '--silent', 'http://127.0.0.1:5173/']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend/predictify-backend
+      target: runtime
+    init: true
+    environment:
+      DATABASE_URL: *database-url
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        ['CMD', 'curl', '--fail', '--silent', 'http://127.0.0.1:3000/api/ready']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    build:
+      context: ./backend/predictify-backend
+      target: development
+    command: ['npm', 'run', 'migrate:up']
+    environment:
+      DATABASE_URL: *database-url
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17@sha256:87c8b42f423b45d5247e6aa8fdb2e7762fec164c68a50fe3eb07e7bfcaf4dbcf
+    environment:
+      POSTGRES_DB: predictify
+      POSTGRES_USER: predictify
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}'
+    ports:
+      - '127.0.0.1:${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'pg_isready',
+          '-h',
+          '127.0.0.1',
+          '-U',
+          'predictify',
+          '-d',
+          'predictify',
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: ghcr.io/coollabsio/minio:RELEASE.2025-10-15T17-29-55Z@sha256:69b55a1c1c5dc285ce04db96689f5b2102317fc77a50680a1874ca6efd1c87f9
+    command: ['server', '/data', '--console-address', ':9001']
+    environment:
+      MINIO_ROOT_USER: '${MINIO_ROOT_USER:-predictify}'
+      MINIO_ROOT_PASSWORD: '${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in .env}'
+    ports:
+      - '127.0.0.1:${MINIO_API_PORT:-9000}:9000'
+      - '127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001'
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres_data:
+  minio_data:
